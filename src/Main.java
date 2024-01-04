@@ -1,26 +1,54 @@
 package src;
-// 2231번 분해합
+// 10815번 숫자 카드
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
-        int res = 0;
+        StringBuilder sb = new StringBuilder();
 
-        for (int i = N; i > 0; i--){
-            int div = 1;
-            int temp = i;
-            while (div <= i){
-                temp += i%(div*10)/div;
-                div *= 10;
-            }
-            if (temp == N)
-                res = i;
+        int N = Integer.parseInt(br.readLine());
+        StringTokenizer stN = new StringTokenizer(br.readLine());
+        ArrayList<Integer> nCards = new ArrayList<>();
+        for (int i = 0; i<N; i++){
+            nCards.add(Integer.parseInt(stN.nextToken()));
+        }
+        Collections.sort(nCards);
+
+        int M = Integer.parseInt(br.readLine());
+        StringTokenizer stM = new StringTokenizer(br.readLine());
+        ArrayList<Integer> mCards = new ArrayList<>();
+        for (int i = 0; i<M; i++){
+            mCards.add(Integer.parseInt(stM.nextToken()));
         }
 
-        System.out.print(res);
+        for (int card : mCards){
+            sb.append(bisect(card, N-1, nCards));
+            sb.append(" ");
+        }
+        System.out.print(sb);
+    }
+
+    public static int bisect(int card, int N, ArrayList<Integer> cards){
+        int left = 0;
+        int right = N;
+        int mid;
+
+        while (left <= right){
+            mid = (left + right) / 2;
+            if (card == cards.get(mid)){
+                return 1;
+            }
+
+            if (card < cards.get(mid)){
+                right = mid-1;
+            } else {
+                left = mid+1;
+            }
+        }
+        return 0;
     }
 }
