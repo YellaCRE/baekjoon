@@ -1,14 +1,18 @@
-from itertools import combinations
-# 2798번 블랙잭
+# 2293번 동전 1
 
-N, M = map(int, input().split())
-cards = list(map(int,input().split()))
+N, K = map(int, input().split())
+coins = []
+dp = [0 for _ in range(K+1)]
+dp[0] = 1
 
-res = 0
-for combi in combinations(cards, 3):
-    temp = sum(combi)
-    if temp > M:
-        continue
-    res = max(res, sum(combi))
+for i in range(N):
+    temp = int(input())
+    coins.append(temp)
 
-print(res)
+for coin in coins:
+    for i in range(K+1):
+        temp = i-coin
+        if temp >= 0:
+            dp[i] += dp[temp]
+
+print(dp[-1])
