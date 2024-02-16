@@ -1,30 +1,40 @@
-# 1202번 보석 도둑
-from heapq import heappush, heappop
+# 2568번 전깃줄 2
+from bisect import bisect_left
+import sys
+input = sys.stdin.readline
 
-N, K = map(int, input().split())
-stones = []
-bags = []
-result = 0
-
+N = int(input())
+line_list = []
 for _ in range(N):
-    heappush(stones, list(map(int, input().split())))
+    line_list.append(list(map(int, input().split())))
+line_list.sort(key=lambda x: x[0])
 
-for _ in range(K):
-    bags.append(int(input()))
-bags_sort = sorted(bags)
+select_line_list = []
+check = []
+for line in line_list:
+    if not select_line_list:
+        select_line_list.append(line[1])
+    if line[1] > select_line_list[-1]:
+        select_line_list.append(line[1])
+        check.append((len(select_line_list)-1, line[1]))
+    else:
+        index = bisect_left(select_line_list, line[1])
+        select_line_list[index] = line[1]
+        check.append((index, line[1]))
 
-# 가치 순으로 가방에 넣어야 하기 때문에 대기할 공간이 필요
-candi_stone = []
-# 가방을 하나씩 꺼낸다
-for bag in bags_sort:
-    # 적당한 크기의 보석을 모두 꺼낸다
-    while stones and bag >= stones[0][0]:
-        heappush(candi_stone, -heappop(stones)[1])
-    # 만약 꺼내진 보석이 있다면 가장 큰 놈 하나만 pop
-    if candi_stone:
-        result -= heappop(candi_stone)
-    # 보석이 더 이상 없으면
-    elif not stones:
-        break
+backtrace = []
+last_index = len(select_line_list)-1
+for i in range(len(check)-1, -1, -1):
+    if check[i][0] == last_index:
+        backtrace.append(check[i][1])
+        last_index -= 1
 
-print(result)
+print(N - len(backtrace))
+
+delete_line_list = []
+for line in line_list:
+    if line[1] not in backtrace:
+        delete_line_list.append(line[0])
+delete_line_list.sort()
+
+print(*delete_line_list, sep='\n')
