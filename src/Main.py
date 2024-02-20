@@ -1,51 +1,32 @@
-# 1644번 소수의 연속합
-import sys
-input = sys.stdin.readline
+# 1987번 알파벳
+dr = [1, 0, -1, 0]
+dc = [0, 1, 0, -1]
 
 
-def prime_list(number):
-    # 자기 자신도 포함
-    n = number+1
+def dfs(current_row, current_col, visited: set):
+    global cnt
 
-    # 에라토스테네스의 체 초기화: n개 요소에 True 설정(소수로 간주)
-    sieve = [True] * n
-
-    # n의 최대 약수가 sqrt(n) 이하이므로 i=sqrt(n)까지 검사
-    m = int(n ** 0.5)
-    for i in range(2, m + 1):
-        if sieve[i]:  # i가 소수인 경우
-            for j in range(i + i, n, i):  # i이후 i의 배수들을 False 판정
-                sieve[j] = False
-
-    # 소수 목록 산출
-    return [i for i in range(2, n) if sieve[i] == True]
+    for i in range(4):
+        nr = current_row + dr[i]
+        nc = current_col + dc[i]
+        if nr < 0 or nr >= R or nc < 0 or nc >= C:
+            continue
+        if board[nr][nc] not in visited:
+            visited.add(board[nr][nc])
+            cnt = max(cnt, len(visited))
+            dfs(nr, nc, visited)
+            visited.remove(board[nr][nc])
+    return
 
 
-N = int(input())
-cnt = 0
-start = 0
-end = 0
-primes = prime_list(N)
-if N != 1:
-    current = primes[0]
-else:
-    current = -1
+R, C = map(int, input().split())
+board = []
+for _ in range(R):
+    board.append(list(input()))
 
-while start <= end:
-    if current == -1:
-        break
-
-    if current == N:
-        cnt += 1
-        current -= primes[start]
-        start += 1
-    elif current < N:
-        if end == len(primes)-1:
-            break
-        end += 1
-        current += primes[end]
-    else:
-        current -= primes[start]
-        start += 1
+cnt = 1
+visited_list = set()
+visited_list.add(board[0][0])
+dfs(0, 0, visited_list)
 
 print(cnt)
