@@ -1,32 +1,23 @@
-# 1987번 알파벳
-dr = [1, 0, -1, 0]
-dc = [0, 1, 0, -1]
+# 7579번 앱
+N, M = map(int, input().split())
+on_memory = list(map(int, input().split()))
+off_memory = list(map(int, input().split()))
+cost = sum(off_memory) + 1
 
+dp = [[0 for _ in range(cost)] for _ in range(N)]
 
-def dfs(current_row, current_col, visited: set):
-    global cnt
+answer = int(1e9)
 
-    for i in range(4):
-        nr = current_row + dr[i]
-        nc = current_col + dc[i]
-        if nr < 0 or nr >= R or nc < 0 or nc >= C:
-            continue
-        if board[nr][nc] not in visited:
-            visited.add(board[nr][nc])
-            cnt = max(cnt, len(visited))
-            dfs(nr, nc, visited)
-            visited.remove(board[nr][nc])
-    return
+for i in range(N):
+    on_current = on_memory[i]
+    off_current = off_memory[i]
+    for j in range(cost-1, -1, -1):
+        if j >= off_current:
+            dp[i][j] = max(dp[i-1][j], dp[i-1][j-off_current] + on_current)
+        else:
+            dp[i][j] = max(dp[i][j], dp[i-1][j])
 
+        if dp[i][j] >= M:
+            answer = min(answer, j)
 
-R, C = map(int, input().split())
-board = []
-for _ in range(R):
-    board.append(list(input()))
-
-cnt = 1
-visited_list = set()
-visited_list.add(board[0][0])
-dfs(0, 0, visited_list)
-
-print(cnt)
+print(answer)
