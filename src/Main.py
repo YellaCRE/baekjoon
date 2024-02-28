@@ -1,23 +1,32 @@
-# 7579번 앱
-N, M = map(int, input().split())
-on_memory = list(map(int, input().split()))
-off_memory = list(map(int, input().split()))
-cost = sum(off_memory) + 1
-
-dp = [[0 for _ in range(cost)] for _ in range(N)]
-
-answer = int(1e9)
-
-for i in range(N):
-    on_current = on_memory[i]
-    off_current = off_memory[i]
-    for j in range(cost-1, -1, -1):
-        if j >= off_current:
-            dp[i][j] = max(dp[i-1][j], dp[i-1][j-off_current] + on_current)
+# 2098번 외판원 순회
+def dfs(now, visited):
+    if visited == (1 << N) - 1:
+        if graph[now][0]:
+            return graph[now][0]
         else:
-            dp[i][j] = max(dp[i][j], dp[i-1][j])
+            return int(1e9)
 
-        if dp[i][j] >= M:
-            answer = min(answer, j)
+    if (now, visited) in dp:
+        return dp[(now, visited)]
 
-print(answer)
+    min_cost = int(1e9)
+    for nxt in range(1, N):
+        # print(bin(visited), bin(nxt), bin(1 << nxt), visited & (1 << nxt))
+        if graph[now][nxt] == 0 or visited & (1 << nxt):
+            continue
+        # print("다음 방문지", bin(visited | (1 << nxt)))
+        cost = dfs(nxt, visited | (1 << nxt)) + graph[now][nxt]
+        min_cost = min(min_cost, cost)
+
+    dp[(now, visited)] = min_cost
+    return min_cost
+
+
+N = int(input())
+graph = []
+for _ in range(N):
+    graph.append(list(map(int, input().split())))
+
+dp = {}
+
+print(dfs(0, 1))
