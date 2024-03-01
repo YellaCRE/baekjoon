@@ -1,32 +1,15 @@
-# 2098번 외판원 순회
-def dfs(now, visited):
-    if visited == (1 << N) - 1:
-        if graph[now][0]:
-            return graph[now][0]
-        else:
-            return int(1e9)
-
-    if (now, visited) in dp:
-        return dp[(now, visited)]
-
-    min_cost = int(1e9)
-    for nxt in range(1, N):
-        # print(bin(visited), bin(nxt), bin(1 << nxt), visited & (1 << nxt))
-        if graph[now][nxt] == 0 or visited & (1 << nxt):
-            continue
-        # print("다음 방문지", bin(visited | (1 << nxt)))
-        cost = dfs(nxt, visited | (1 << nxt)) + graph[now][nxt]
-        min_cost = min(min_cost, cost)
-
-    dp[(now, visited)] = min_cost
-    return min_cost
-
+# 2166번 다각형의 면적
 
 N = int(input())
-graph = []
-for _ in range(N):
-    graph.append(list(map(int, input().split())))
+point_list = []
+for i in range(N):
+    point_list.append(list(map(int, input().split())))
 
-dp = {}
+ans = 0
+for i in range(N):
+    if i == N-1:
+        ans += (point_list[i][0] * point_list[0][1]) - (point_list[0][0] * point_list[i][1])
+    else:
+        ans += (point_list[i][0] * point_list[i+1][1]) - (point_list[i+1][0] * point_list[i][1])
 
-print(dfs(0, 1))
+print(round(abs(ans)*0.5, 1))
