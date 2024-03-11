@@ -1,15 +1,25 @@
-// 11050번 이항 계수 1
+// 10816번 숫자 카드 2
 const solution = () => {
-    let [N, K] = require('fs').readFileSync('/dev/stdin').toString().trim().split(' ').map(Number)
-    let numerator = 1;   // 분자
-    let denominator = 1; // 분모
+    const file = process.platform === "linux" ? "dev/stdin" : "test.txt";
+    let input = require('fs').readFileSync(file).toString().trim().split('\n')
 
-    for (let i = 0; i < K; i++) {
-        numerator *= N - i;
-        denominator *= K - i;
-    }
+    let cards = input[1]
+        .split(' ')
+        .map(Number)
+        .reduce((dict, num) => {
+            dict[num] = (dict[num]||0) + 1
+            return dict
+        }, {})
 
-    console.log(numerator / denominator);
+    let cardCount = input[3]
+        .split(' ')
+        .map(Number)
+        .map((num) => {
+            return cards[num] ? cards[num] : 0
+        })
+        .join(' ')
+
+    console.log(cardCount)
 }
 
 solution()
