@@ -1,45 +1,44 @@
-// 9020번 골드바흐의 추측
-const Cyrene = (n, m) => {
-    let prime = []
-    for (let i = n; i<=m; i++){
-        prime[i] = i;
-    }
-    for (let i = 2; i<=m; i++){
-        if (prime[i]===0) continue;
-        for (let j= i + i; j<=m; j+=i){
-            prime[j] = 0
-        }
-    }
-    prime = prime.filter(n => n !== 0)
+// 2665번 미로만들기
+const fs = require('fs');
+const filePath = process.platform === "linux" ? "dev/stdin" : "test.txt"
+const stdin = fs.readFileSync(filePath).toString().trim().split("\n")
+// console.log(stdin)
 
-    return prime;
+const n = Number(stdin.shift())
+// console.log(n)
+
+const dr = [1, 0, -1, 0]
+const dc = [0, 1, 0, -1]
+const visited = Array(n)
+for (let i = 0; i<n; i++){
+    visited[i] = Array(n).fill(0)
 }
+// console.log(visited)
 
-const solution = () => {
-    const file = process.platform === "linux" ? "dev/stdin" : "test.txt";
-    const input = require('fs').readFileSync(file).toString().trim().split('\n');
+const BFS = () => {
+    let q = []
+    q.push([[0, 0], 0])
+    visited[0][0] = 1
 
-    const n = 2;
-    const m = 10000;
-    let prime = Cyrene(n, m)
+    while (q){
+        let [[currentRow, currentCol], count] = q.shift()
 
-    for (let i = 0; i < input.length; i++){
-        const num = Number(input[i]);
-        let answer = [];
+        for (let i = 0; i < 4; i++){
+            let nextRow = currentRow + dr[i]
+            let nextCol = currentCol + dc[i]
+            if (nextRow === n-1 && nextCol === n-1) return count;
 
-        for (let j = 0; prime[j] < num/2 + 1; j++) {
-            const index = prime.indexOf(num - prime[j])
+            if (nextRow < 0 || n <= nextRow || nextCol < 0 || n <= nextCol) continue;
+            if (visited[nextRow][nextCol] === 1) continue
 
-            if (index !== -1) {
-                answer.push([prime[j], prime[index]])
+            visited[nextRow][nextCol] = 1
+            if (stdin[nextRow][nextCol] === '0'){
+                q.push([[nextRow, nextCol], count+1])
+            } else {
+                q.unshift([[nextRow, nextCol], count])
             }
         }
-
-        if (answer.length !== 0){
-            const a = answer.pop();
-            console.log(`${a[0]} ${a[1]}`);
-        }
     }
 }
 
-solution()
+console.log( BFS() )
