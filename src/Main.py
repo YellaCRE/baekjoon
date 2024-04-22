@@ -1,15 +1,17 @@
-# 2166번 다각형의 면적
+# 1026번 보물
+import sys
+input = sys.stdin.readline
 
+answer = 0
 N = int(input())
-point_list = []
-for i in range(N):
-    point_list.append(list(map(int, input().split())))
+A_list = list(map(int, input().split()))
+B_list = list(map(int, input().split()))
 
-ans = 0
-for i in range(N):
-    if i == N-1:
-        ans += (point_list[i][0] * point_list[0][1]) - (point_list[0][0] * point_list[i][1])
-    else:
-        ans += (point_list[i][0] * point_list[i+1][1]) - (point_list[i+1][0] * point_list[i][1])
+A_list.sort()
 
-print(round(abs(ans)*0.5, 1))
+for idx in range(N):
+    B_max = max(B_list)
+    answer += B_max * A_list[idx]
+    B_list.remove(B_max)
+
+print(answer)
