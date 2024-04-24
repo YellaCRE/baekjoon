@@ -1,25 +1,51 @@
-# 11000번 강의실 배정
-from heapq import heappush, heappop
+# 1103번 게임
 import sys
 input = sys.stdin.readline
+sys.setrecursionlimit(int(1e5))
+dr = [1, 0, -1, 0]
+dc = [0, 1, 0, -1]
 
-N = int(input())
-q = []
 
-for i in range(N):
-    start, end = map(int, input().split())
-    q.append([start, end])
+def is_in_range(r, c):
+    return 0 <= r < N and 0 <= c < M
 
-q.sort()
 
-room = []
-heappush(room, q[0][1])
+def coin_move(r, c):
+    if visited[r][c]:
+        print(-1)
+        exit()
+    visited[r][c] = True
 
-for i in range(1, N):
-    if q[i][0] < room[0]: # 현재 회의실 끝나는 시간보다 다음 회의 시작시간이 빠르면
-        heappush(room, q[i][1]) # 새로운 회의실 개설
-    else: # 현재 회의실에 이어서 회의 개최 가능
-        heappop(room) # 새로운 회의로 시간 변경을 위해 pop후 새 시간 push
-        heappush(room, q[i][1])
+    move_dist = int(board[r][c])
+    for d in range(4):
+        nxt_row, nxt_col = r + move_dist * dr[d], c + move_dist * dc[d]
 
-print(len(room))
+        if not is_in_range(nxt_row, nxt_col):
+            continue
+
+        if board[nxt_row][nxt_col] == 'H':
+            continue
+
+        if dp[r][c]+1 <= dp[nxt_row][nxt_col]:
+            continue
+
+        dp[nxt_row][nxt_col] = dp[r][c] + 1
+        coin_move(nxt_row, nxt_col)
+
+    visited[r][c] = False
+    return
+
+
+N, M = map(int, input().split())
+dp = [[0 for _ in range(M)] for _ in range(N)]
+board = []
+for _ in range(N):
+    board.append(list(input()))
+
+visited = [[False for _ in range(M)] for _ in range(N)]
+coin_move(0, 0)
+
+answer = 0
+for dp_item in dp:
+    answer = max(answer, max(dp_item))
+print(answer + 1)
