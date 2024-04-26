@@ -1,38 +1,25 @@
-# 9406번 텀 프로젝트
+# 1058번 친구
 import sys
-sys.setrecursionlimit(int(1e6))
 input = sys.stdin.readline
 
 
-def find_team(i):
-    global result
-    visited[i] = True
-    cycle.append(i)
+N = int(input())
+friends = [list(input()) for _ in range(N)]
 
-    nxt_member = team_select[i]
-    if visited[nxt_member]:
-        # 만약 visited인데 사이클에 없으면 그 멤버는 어느 프로젝트 팀에도 속할 수 없다
-        # 이미 visited라는 뜻은 선택권을 사용했다는 의미, 만약 선택권을 사용했는데 선택받지 못했다면 다른 경우의 수는 나올 수 없다
-        if nxt_member in cycle:
-            start_idx = cycle.index(nxt_member)
-            # 리스트를 더하기 연산하면 펼쳐서 값을 append 할 수 있다
-            result += cycle[start_idx:]
-        return
-    else:
-        find_team(nxt_member)
+connected = [[0] * N for _ in range(N)]
 
+for k in range(N):
+    for i in range(N):
+        for j in range(N):
+            if i == j:
+                continue
+            # 두 사람이 친구이거나 A와 친구이고, B와 친구인 C가 존재해야한다
+            if friends[i][j] == "Y" or (friends[i][k] == "Y" and friends[k][j] == "Y"):
+                connected[i][j] = 1
 
-T = int(input())
-for _ in range(T):
-    N = int(input())
-    team_select = list(map(int, input().split()))
-    team_select.insert(0, 0)
-    visited = [False for _ in range(N+1)]
-    result = []
+answer = 0
+for row in connected:
+    # 한 사람의 친구의 수는 sum(row)
+    answer = max(answer, sum(row))
 
-    for idx in range(1, N+1):
-        if not visited[idx]:
-            cycle = []
-            find_team(idx)
-
-    print(N - len(result))
+print(answer)
