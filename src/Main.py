@@ -1,26 +1,40 @@
 import sys
+from itertools import combinations
+from bisect import bisect_left, bisect_right
 INPUT = sys.stdin.readline
-DIV = 1000000009
 
-# 15988번 1,2,3 더하기 3
-T = int(INPUT())
-t = []
-for _ in range(T):
-    t.append(int(INPUT()))
 
-t_sort = set(t)
-t_d = {1: 1, 2: 2, 3: 4}
+def getSubSequence(arr, sumArr):
+    for cnt in range(1, len(arr)+1):
+        for combiSum in combinations(arr, cnt):
+            sumArr.append(sum(combiSum))
 
-j = 0
-a, b, c = 1, 2, 4
-for i in range(4, 1000010):
-    # 피보나치 수열과 같은 규칙이 존재
-    c, b, a = (a + b + c) % int(1e9 + 9), c, b
-    if i in t:
-        t_d.update({i: c})
-        j += 1
-        if j == t:
-            break
 
-for i in t:
-    print(t_d[i])
+def getNumCnt(arr, find):
+    # 찾는 숫자가 여러 개일 수 있다
+    return bisect_right(arr, find) - bisect_left(arr, find)
+
+
+# 1208번 부분수열의 합 2
+N, S = map(int, INPUT().split())
+num_list = list(map(int, INPUT().split()))
+
+left, right = num_list[:N//2], num_list[N//2:]
+left_sum, right_sum = [], []
+
+getSubSequence(left, left_sum)
+getSubSequence(right, right_sum)
+# 정렬을 하는 이유는 bisect를 통해 개수를 구할 것이라
+left_sum.sort()
+right_sum.sort()
+
+ans = 0
+for le in left_sum:
+    find_num = S - le
+    # find_num 의 개수 찾기
+    ans += getNumCnt(right_sum, find_num)
+
+ans += getNumCnt(left_sum, S)
+ans += getNumCnt(right_sum, S)
+
+print(ans)
