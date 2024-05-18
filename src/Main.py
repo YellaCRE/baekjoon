@@ -1,35 +1,57 @@
 import sys
-sys.setrecursionlimit(int(1e9))
+from math import ceil, log2
+
+sys.setrecursionlimit(int(1e8))
 INPUT = sys.stdin.readline
+MAX = int(1e9)
+MIN = 0
 
-# 2533번 사회망 서비스
-N = int(INPUT())
-graph = [[] for _ in range(N+1)]
-for _ in range(N-1):
-    start, end = map(int, INPUT().split())
-    graph[start].append(end)
-    graph[end].append(start)
+# 2357번 최솟값과 최댓값
+N, M = map(int, INPUT().split())
+num_list = []
+for _ in range(N):
+    num_list.append(int(INPUT()))
 
-dp = [[0, 1] for _ in range(N+1)]
-visited = [False for _ in range(N+1)]
-visited[1] = True
+answer_range = []
+for _ in range(M):
+    answer_range.append(list(map(int, INPUT().split())))
 
-
-def dfs(parent_node):
-    for child_node in graph[parent_node]:
-        # 아직 방문하지 않은 노드일 경우
-        if not visited[child_node]:
-            visited[child_node] = True
-            # 일단 리프 노드까지 도착한다
-            dfs(child_node)
-            # 자식 노드가 없으면 return 되면서 실행되기 때문에
-            # 리프 노드부터 컨텍스트 실행
-
-            # 부모 노드가 얼리어답터가 아닌 경우, 자식 노드는 반드시 얼리어답터이다
-            dp[parent_node][0] += dp[child_node][1]
-            # 부모 노드가 얼리어답터인 경우, 자식노드는 상관없음(작은 수)
-            dp[parent_node][1] += min(dp[child_node])
+# 세그먼트 트리 크기 구하기
+h = ceil(log2(len(num_list))) + 1
+nodeNum = 2 ** h
+seg_tree = [[0, 0] for _ in range(nodeNum)]
 
 
-dfs(1)
-print(min(dp[1]))
+def makeSegTree(idx, start, end):
+    # 만약 리프노드이면
+    if start == end:
+        seg_tree[idx] = [num_list[start], num_list[start]]
+        return seg_tree[idx]
+
+    mid = (start + end) // 2
+    left = makeSegTree(idx * 2, start, mid)
+    right = makeSegTree(idx * 2 + 1, mid + 1, end)
+    
+    # 자식의 값 중 min, max 값을 부모 노드에 저장한다
+    seg_tree[idx] = [min(left[0], right[0]), max(left[1], right[1])]
+    return seg_tree[idx]
+
+
+def find(idx, find_start, find_end, start, end):
+    if end < find_start or find_end < start:
+        return [int(1e9), 0]
+
+    if find_start <= start and end <= find_end:
+        return seg_tree[idx]
+
+    mid = (start + end) // 2
+    left = find(idx * 2, find_start, find_end, start, mid)
+    right = find(idx * 2 + 1, find_start, find_end, mid + 1, end)
+    
+    return [min(left[0], right[0]), max(left[1], right[1])]
+
+
+makeSegTree(1, 0, len(num_list) - 1)
+
+for answer_start, answer_end in answer_range:
+    print(*find(1, answer_start-1, answer_end-1, 0, len(num_list) - 1))
