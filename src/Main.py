@@ -1,10 +1,9 @@
 import sys
 INPUT = sys.stdin.readline
 
-# 2753번 윤년
-year = int(INPUT())
-
-if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
-    print(1)
-else:
-    print(0)
+# 10871번 X보다 작은 수
+N, X = map(int, input().split())
+A = list(map(int, input().split()))
+for i in range(N):
+    if A[i] < X:
+        print(A[i], end=" ")
