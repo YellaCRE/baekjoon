@@ -1,15 +1,36 @@
 import sys
 INPUT = sys.stdin.readline
-# 15080번 Every Second Counts
+# 31925번 APC2shake!
 
-MAX_SEC = 24 * 3600
-start_time = list(map(int, INPUT().split(":")))
-end_time = list(map(int, INPUT().split(":")))
+N = int(INPUT())
+participant_list = []
+for _ in range(N):
+    name, isJaehak, isWinner, highScore, rank = INPUT().strip().split(" ")
+    # 아주대학교 학부 소속의 재학생
+    if isJaehak != 'jaehak':
+        continue
+    # 역대 국제 대학생 프로그래밍 경시대회(이하 ICPC)의 수상자가 아닌 자
+    if isWinner == 'winner':
+        continue
+    # 역대 shake! 3위 이내의 수상자가 아닌 자
+    if 0 < int(highScore) < 4:
+        continue
 
-start_sec = 3600 * start_time[0] + 60 * start_time[1] + start_time[2]
-end_sec = 3600 * end_time[0] + 60 * end_time[1] + end_time[2]
+    participant_list.append([name, int(rank)])
 
-if start_sec <= end_sec:
-    print(end_sec - start_sec)
+p_cnt = len(participant_list)
+sorted_list = sorted(participant_list, key=lambda x: x[1])
+
+if p_cnt > 10:
+    ans_list = sorted(sorted_list[:10], key=lambda x: x[0])
+
+    print(10)
+    for i in range(10):
+        print(ans_list[i][0])
+
 else:
-    print(MAX_SEC + end_sec - start_sec)
+    ans_list = sorted(sorted_list, key=lambda x: x[0])
+
+    print(p_cnt)
+    for i in range(p_cnt):
+        print(ans_list[i][0])
