@@ -1,36 +1,47 @@
 import sys
 INPUT = sys.stdin.readline
-# 31925번 APC2shake!
+# 27466번 그래서 대회 이름 뭐로 하죠
 
-N = int(INPUT())
-participant_list = []
-for _ in range(N):
-    name, isJaehak, isWinner, highScore, rank = INPUT().strip().split(" ")
-    # 아주대학교 학부 소속의 재학생
-    if isJaehak != 'jaehak':
-        continue
-    # 역대 국제 대학생 프로그래밍 경시대회(이하 ICPC)의 수상자가 아닌 자
-    if isWinner == 'winner':
-        continue
-    # 역대 shake! 3위 이내의 수상자가 아닌 자
-    if 0 < int(highScore) < 4:
-        continue
 
-    participant_list.append([name, int(rank)])
+def solve():
+    last_word = ''
+    double_A_flag = False
 
-p_cnt = len(participant_list)
-sorted_list = sorted(participant_list, key=lambda x: x[1])
+    last_idx = -1
+    # 맨 뒷글자가 알파벳 자음
+    for j_idx in range(N-1, 0, -1):
+        if input_str[j_idx] not in ['A', 'E', 'I', 'O', 'U']:
+            last_idx = j_idx
+            last_word = input_str[j_idx]
+            break
 
-if p_cnt > 10:
-    ans_list = sorted(sorted_list[:10], key=lambda x: x[0])
+    if last_word == '':
+        print('NO')
+        return
 
-    print(10)
-    for i in range(10):
-        print(ans_list[i][0])
+    for j_idx in range(last_idx-1, 0, -1):
+        if input_str[j_idx] == 'A':
+            last_idx = j_idx
+            break
 
-else:
-    ans_list = sorted(sorted_list, key=lambda x: x[0])
+    for j_idx in range(last_idx-1, 0, -1):
+        if input_str[j_idx] == 'A':
+            last_idx = j_idx
+            double_A_flag = True
+            break
 
-    print(p_cnt)
-    for i in range(p_cnt):
-        print(ans_list[i][0])
+    if not double_A_flag:
+        print('NO')
+        return
+
+    if last_idx < M-3:
+        print('NO')
+        return
+
+    print('YES')
+    print(input_str[last_idx-(M-3):last_idx]+'AA'+last_word)
+
+
+N, M = map(int, INPUT().split())
+input_str = INPUT()
+solve()
